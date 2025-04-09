@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Settings | BankTide</title>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="min-h-screen flex flex-col">
+    <!-- Navbar (Same as Dashboard) -->
+    <div class="bg-blue-900 text-white">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold">BankTide</div>
+        <div class="flex items-center gap-3">
+          <span id="fullName">Loading...</span>
+          <img id="userAvatar" class="h-8 w-8 rounded-full" src="https://i.pravatar.cc/300" alt="Avatar">
+          <button id="signOutBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 flex space-x-8 py-4 text-gray-600">
+        <a id="dashboard" href="#" class="hover:text-blue-600">Dashboard</a>
+        <a href="#" class="font-semibold text-blue-600 border-b-2 border-blue-600">Profile</a>
+        <a href="#" class="hover:text-blue-600">Security</a>
+      </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="container mx-auto px-4 py-6 flex-1">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <!-- Profile Header -->
+          <div class="bg-blue-50 px-6 py-4 border-b">
+            <h2 class="text-xl font-semibold text-gray-800">Profile Settings</h2>
+            <p class="text-gray-600 text-sm">Manage your personal information</p>
+          </div>
+          
+          <!-- Profile Form -->
+          <div class="p-6">
+            <!-- Profile Picture Section -->
+            <div class="flex items-center mb-8">
+              <div class="relative">
+                <img id="profileImage" class="h-24 w-24 rounded-full object-cover border-4 border-white shadow" 
+                     src="https://i.pravatar.cc/300" alt="Profile">
+                <label for="imageUpload" class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <input id="imageUpload" type="file" accept="image/*" class="hidden">
+                </label>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-lg font-medium text-gray-800">Profile Photo</h3>
+                <p class="text-gray-500 text-sm">JPG, GIF or PNG. Max size 2MB</p>
+              </div>
+            </div>
+
+            <!-- Personal Information Form -->
+            <form id="profileForm" class="space-y-6">
+              <!-- Full Name -->
+              <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                <div class="mt-1 flex rounded-md shadow-sm">
+                  <input type="text" id="name" name="name" 
+                         class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300 p-2 border"
+                         placeholder="John Doe">
+                </div>
+              </div>
+
+              <!-- Age -->
+              <div>
+                <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+                <div class="mt-1">
+                  <input type="number" id="age" name="age" min="18" max="120"
+                         class="focus:ring-blue-500 focus:border-blue-500 block w-full rounded-md sm:text-sm border-gray-300 p-2 border"
+                         placeholder="30">
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                <div class="mt-1 flex rounded-md shadow-sm">
+                  <input type="email" id="email" name="email" 
+                         class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300 p-2 border"
+                         placeholder="john@example.com">
+                </div>
+              </div>
+
+              <!-- Phone -->
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                <div class="mt-1 flex rounded-md shadow-sm">
+                  <input type="tel" id="phone" name="phone" 
+                         class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300 p-2 border"
+                         placeholder="+1 (555) 123-4567">
+                </div>
+              </div>
+
+              <!-- Form Actions -->
+              <div class="flex justify-end pt-6 border-t">
+                <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Cancel
+                </button>
+                <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer (Same as Dashboard) -->
+    <div class="bg-white border-t py-4 mt-auto">
+      <div class="container mx-auto px-4 flex justify-between text-sm text-gray-500">
+        <div>
+          <a href="#" class="hover:text-blue-600">Home</a> ·
+          <a href="#" class="hover:text-blue-600">Support</a> ·
+          <a href="#" class="hover:text-blue-600">Privacy</a>
+        </div>
+        <div>&copy; <span id="currentYear">2025</span> BankTide Inc.</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut,
+      updateEmail
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc,
+      updateDoc,
+      collection
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { 
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDH__iEQK8uaBS10EOamzvEJZVYu7AYkvo",
+      authDomain: "bankingapp-1eb5e.firebaseapp.com",
+      projectId: "bankingapp-1eb5e",
+      storageBucket: "bankingapp-1eb5e.appspot.com",
+      messagingSenderId: "324926746789",
+      appId: "1:324926746789:web:efe8372bd9aa6a24099d4c"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const userColRef = collection(db, "bankUsers");
+
+    // Set current year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // Check URL for user ID
+    const searchParams = new URLSearchParams(window.location.search);
+    const userId = searchParams.get('id');
+  
+    if (!userId) {
+      window.location.href = './login.html';
+    }
+
+    // Sign out functionality
+    document.getElementById('signOutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = './login.html';
+      } catch (error) {
+        console.error("Sign out error:", error);
+        alert("Error signing out. Please try again.");
+      }
+    });
+
+    // Check auth state and load profile
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          // Load user data
+          const userDocRef = doc(db, "bankUsers", user.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            
+            // Populate form fields
+            document.getElementById('fullName').textContent = userData.name || "User";
+            document.getElementById('name').value = userData.name || "";
+            document.getElementById('email').value = user.email || "";
+            document.getElementById('phone').value = userData.phone || "";
+            
+            // Calculate age from DOB if available
+            if (userData.dob) {
+              const dob = new Date(userData.dob);
+              const ageDiff = Date.now() - dob.getTime();
+              const ageDate = new Date(ageDiff);
+              const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+              document.getElementById('age').value = age;
+            }
+            
+            // Load profile image if available
+            if (userData.photoURL) {
+              document.getElementById('profileImage').src = userData.photoURL;
+              document.getElementById('userAvatar').src = userData.photoURL;
+            }
+          }
+        } catch (error) {
+          console.error("Error loading profile:", error);
+          alert("Error loading profile data. Please try again later.");
+        }
+      } else {
+        window.location.href = './login.html';
+      }
+    });
+
+    // Handle profile image upload
+    document.getElementById('imageUpload').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          window.location.href = './login.html';
+          return;
+        }
+
+        // Upload to Firebase Storage
+        const storageRef = ref(storage, `profile_images/${user.uid}`);
+        await uploadBytes(storageRef, file);
+        
+        // Get download URL
+        const downloadURL = await getDownloadURL(storageRef);
+        
+        // Update profile image display
+        document.getElementById('profileImage').src = downloadURL;
+        document.getElementById('userAvatar').src = downloadURL;
+        
+        // Update Firestore with new photo URL
+        const userDocRef = doc(db, "bankUsers", user.uid);
+        await updateDoc(userDocRef, {
+          photoURL: downloadURL
+        });
+        
+        alert("Profile picture updated successfully!");
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        alert("Error updating profile picture. Please try again.");
+      }
+    });
+
+    // Handle form submission
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const user = auth.currentUser;
+      if (!user) {
+        window.location.href = './login.html';
+        return;
+      }
+      
+      try {
+        // Get form values
+        const name = document.getElementById('name').value;
+        const age = document.getElementById('age').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        
+        // Calculate DOB from age
+        const currentYear = new Date().getFullYear();
+        const birthYear = currentYear - parseInt(age);
+        const dob = new Date(birthYear, 0, 1).toISOString();
+        
+        // Update email in Firebase Auth if changed
+        if (email !== user.email) {
+          await updateEmail(user, email);
+        }
+        
+        // Update user document in Firestore
+        const userDocRef = doc(db, "bankUsers", user.uid);
+        await updateDoc(userDocRef, {
+          name: name,
+          phone: phone,
+          dob: dob
+        });
+        
+        // Update displayed name
+        document.getElementById('fullName').textContent = name;
+        
+        alert("Profile updated successfully!");
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        alert("Error updating profile. Please try again.");
+      }
+    });
+
+    // Navigation to dashboard
+    document.getElementById('dashboard').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `./dashboard.html?id=${userId}`;
+    });
+  </script>
+</body>
+</html>

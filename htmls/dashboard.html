@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bank Dashboard</title>
+  <style>
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <div class="bg-blue-900 text-white">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold">BankTide</div>
+        <div class="flex items-center gap-3">
+          <span id="fullName">Loading...</span>
+          <div class="dropdown relative">
+            <button id="dropdownButton" class="flex items-center focus:outline-none">
+              <img id="userAvatar" class="h-8 w-8 rounded-full" src="https://i.pravatar.cc/300" alt="Avatar" />
+            </button>
+            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+              <a id="profileSettings" href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">News</a>
+              <div class="border-t border-gray-200"></div>
+              <a href="#" id="dropdownSignOut" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
+            </div>
+          </div>
+          <button id="signOutBtn" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Sign Out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="bg-white border-b">
+      <div class="container mx-auto px-4 flex space-x-8 py-4 text-gray-600">
+        <a id="dash" href="#" class="font-semibold text-blue-600 border-b-2 border-blue-600">Dashboard</a>
+        <a href="#" id="transferPage" class="hover:text-blue-600">Transfers</a>
+        <a href="#" class="hover:text-blue-600">Payments</a>
+        <a href="#" class="hover:text-blue-600">Accounts</a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-6 flex flex-wrap -mx-4">
+      <!-- Left Panel -->
+      <div class="w-full lg:w-1/2 px-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold text-gray-700 mb-4">Account Summary</h2>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+              <div>
+                <p id="accountType" class="text-gray-600 font-medium">Loading...</p>
+                <p id="balance" class="text-2xl font-bold text-gray-800 mt-1">-</p>
+                <p id="accountNumber" class="text-gray-500 text-sm mt-1">Account #: -</p>
+              </div>
+              <span id="accountBadge" class="px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800">Loading...</span>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-2 gap-4 mt-6">
+              <button id="transferPageBtn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition">
+                Transfer Money
+              </button>
+              <button class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm font-medium transition">
+                Pay Bills
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Transactions -->
+      <div class="w-full lg:w-1/2 px-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 id="allTransfers" class="text-lg font-semibold text-gray-700">Recent Transactions</h2>
+            <a id="viewAll" href="#" class="text-blue-600 text-sm hover:underline">View All</a>
+          </div>
+          <ul id="transactionsList" class="divide-y divide-gray-200">
+            <li class="py-4 text-center text-gray-500">Loading transactions...</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="bg-white border-t py-4 mt-auto">
+      <div class="container mx-auto px-4 flex justify-between text-sm text-gray-500">
+        <div>
+          <a href="#" class="hover:text-blue-600">Home</a> ·
+          <a href="#" class="hover:text-blue-600">Support</a> ·
+          <a href="#" class="hover:text-blue-600">Privacy</a>
+        </div>
+        <div>&copy; <span id="currentYear">2025</span> BankTide Inc.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    // Firebase config
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { 
+      getAuth, 
+      onAuthStateChanged, 
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      getDoc,
+      collection,
+      query,
+      where,
+      getDocs,
+      orderBy,
+      limit,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyDH__iEQK8uaBS10EOamzvEJZVYu7AYkvo",
+      authDomain: "bankingapp-1eb5e.firebaseapp.com",
+      projectId: "bankingapp-1eb5e",
+      storageBucket: "bankingapp-1eb5e.appspot.com",
+      messagingSenderId: "324926746789",
+      appId: "1:324926746789:web:efe8372bd9aa6a24099d4c"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const userColRef = collection(db, "bankUsers");
+  
+    // Set current year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+  
+    // Check URL for user ID
+    const searchParams = new URLSearchParams(window.location.search);
+    const userId = searchParams.get('id');
+  
+    if (!userId) {
+      window.location.href = './login.html';
+    }
+  
+    // Format currency
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+      }).format(amount);
+    }
+  
+    // Load transactions for the logged-in user
+    function loadTransactions(userId) {
+      const transactionsList = document.getElementById('transactionsList');
+      transactionsList.innerHTML = '<li class="py-4 text-center text-gray-500">Loading transactions...</li>';
+  
+      try {
+        const transactionsRef = collection(db, "bankUsers", userId, "transactions");
+        const q = query(transactionsRef, orderBy("timestamp", "desc"), limit(5));
+        
+        // Real-time listener
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          transactionsList.innerHTML = "";
+          
+          if (querySnapshot.empty) {
+            transactionsList.innerHTML = '<li class="py-4 text-center text-gray-500">No transactions found.</li>';
+            return;
+          }
+          
+          querySnapshot.forEach(doc => {
+            const txn = doc.data();
+            const li = document.createElement("li");
+            li.className = "py-3 flex justify-between items-center";
+            
+            li.innerHTML = `
+              <div class="flex items-center">
+                <div class="p-2 rounded-full ${txn.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} mr-3">
+                  ${txn.type === 'credit' ? '↑' : '↓'}
+                </div>
+                <div>
+                  <p class="text-gray-800 font-medium">${txn.description}</p>
+                  <p class="text-gray-500 text-sm">${new Date(txn.timestamp?.seconds * 1000).toLocaleDateString()} • ${txn.account}</p>
+                </div>
+              </div>
+              <p class="${txn.type === 'credit' ? 'text-green-600' : 'text-red-600'} font-bold">
+                ${txn.type === 'credit' ? '+' : '-'}${formatCurrency(txn.amount)}
+              </p>
+            `;
+            transactionsList.appendChild(li);
+          });
+        }, (error) => {
+          console.error("Error loading transactions:", error);
+          transactionsList.innerHTML = '<li class="py-4 text-center text-red-500">Failed to load transactions.</li>';
+        });
+        
+        return unsubscribe;
+      } catch (err) {
+        console.error("Error setting up transaction listener:", err);
+        transactionsList.innerHTML = '<li class="py-4 text-center text-red-500">Failed to load transactions.</li>';
+      }
+    }
+    document.getElementById('viewAll').addEventListener('click', allTransactions)
+
+    function allTransactions() {
+      console.log('clicked');
+      viewAll.innerHTML = '';
+       allTransfers.textContent = 'Transaction History';
+
+      const transactionsList = document.getElementById('transactionsList');
+      transactionsList.innerHTML = '<li class="py-4 text-center text-gray-500">Loading transactions...</li>';
+  
+      try {
+        const transactionsRef = collection(db, "bankUsers", userId, "transactions");
+        const q = query(transactionsRef, orderBy("timestamp", "desc"), limit(1000));
+        
+        // Real-time listener
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          transactionsList.innerHTML = "";
+          
+          if (querySnapshot.empty) {
+            transactionsList.innerHTML = '<li class="py-4 text-center text-gray-500">No transactions found.</li>';
+            return;
+          }
+          
+          querySnapshot.forEach(doc => {
+            const txn = doc.data();
+            const li = document.createElement("li");
+            li.className = "py-3 flex justify-between items-center";
+            
+            li.innerHTML = `
+              <div class="flex items-center">
+                <div class="p-2 rounded-full ${txn.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} mr-3">
+                  ${txn.type === 'credit' ? '↑' : '↓'}
+                </div>
+                <div>
+                  <p class="text-gray-800 font-medium">${txn.description}</p>
+                  <p class="text-gray-500 text-sm">${new Date(txn.timestamp?.seconds * 1000).toLocaleDateString()} • ${txn.account}</p>
+                </div>
+              </div>
+              <p class="${txn.type === 'credit' ? 'text-green-600' : 'text-red-600'} font-bold">
+                ${txn.type === 'credit' ? '+' : '-'}${formatCurrency(txn.amount)}
+              </p>
+            `;
+            transactionsList.appendChild(li);
+          });
+        }, (error) => {
+          console.error("Error loading transactions:", error);
+          transactionsList.innerHTML = '<li class="py-4 text-center text-red-500">Failed to load transactions.</li>';
+        });
+        
+        return unsubscribe;
+      } catch (err) {
+        console.error("Error setting up transaction listener:", err);
+        transactionsList.innerHTML = '<li class="py-4 text-center text-red-500">Failed to load transactions.</li>';
+      }
+    }
+    
+  
+    // Load user data
+    async function loadUserData() {
+      try {
+        // Get user document
+        const userDocRef = doc(userColRef, userId);
+        const userDoc = await getDoc(userDocRef);
+  
+        if (!userDoc.exists()) {
+          throw new Error("User account not found");
+        }
+  
+        const userData = userDoc.data();
+        
+        // Update profile information
+        document.getElementById('fullName').textContent = userData.name || "User";
+        
+        // Update account information
+        document.getElementById('accountType').textContent = `${userData.accountType?.toUpperCase() || 'CHECKING'} ACCOUNT`;
+        document.getElementById('balance').textContent = formatCurrency(userData.accountBalance || 0);
+        document.getElementById('accountNumber').textContent = `Account #: ${userData.accountNumber || '•••• •••• ••••'}`;
+        
+        // Set account badge based on type
+        const badgeElement = document.getElementById('accountBadge');
+        if (userData.accountType?.toLowerCase().includes('savings')) {
+          badgeElement.className = "px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-800";
+          badgeElement.textContent = "High Interest";
+        } else {
+          badgeElement.className = "px-3 py-1 text-sm rounded-full bg-green-100 text-green-800";
+          badgeElement.textContent = "Primary";
+        }
+  
+        // Load transactions
+        return loadTransactions(userId);
+        
+      } catch (error) {
+        console.error("Error loading user data:", error);
+        alert("Error loading account information. Please try again later.");
+        window.location.href = './login.html';
+      }
+    }
+  
+    // Handle sign out
+    async function handleSignOut() {
+      try {
+        await signOut(auth);
+        window.location.href = './login.html';
+      } catch (error) {
+        console.error("Sign out error:", error);
+        alert("Error signing out. Please try again.");
+      }
+    }
+  
+    // Initialize UI interactions
+    function initUI() {
+      const dropdownButton = document.getElementById('dropdownButton');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+      
+      // Toggle dropdown menu
+      dropdownButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+      });
+  
+      // Close dropdown when clicking outside
+      document.addEventListener('click', () => {
+        dropdownMenu.classList.add('hidden');
+      });
+  
+      // Prevent dropdown from closing when clicking inside
+      dropdownMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+  
+      // Set up sign out buttons
+      document.getElementById('signOutBtn').addEventListener('click', handleSignOut);
+      document.getElementById('dropdownSignOut').addEventListener('click', handleSignOut);
+  
+      // Set up transfer page navigation
+      document.getElementById('transferPage').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = `./transfer.html?id=${userId}`;
+      });
+      
+      document.getElementById('transferPageBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = `./transfer.html?id=${userId}`;
+      });
+    }
+  
+    // Check auth state
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Verify URL matches logged in user
+        if (user.uid !== userId) {
+          window.location.href = `./dashboard.html?id=${user.uid}`;
+        } else {
+          loadUserData();
+          initUI();
+        }
+      } else {
+        window.location.href = './login.html';
+      }
+    });
+
+    document.getElementById('profileSettings').addEventListener('click', updateProfile);
+    function updateProfile() {
+      window.location.href = `./profile.html?id=${userId}`;
+      console.log('clicked');
+      
+    }
+
+    
+  </script>
+</body>
+</html>
